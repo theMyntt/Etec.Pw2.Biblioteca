@@ -16,16 +16,20 @@ public class EmprestimoService {
     private ILivroRepository livroRepository;
 
     public ResponseEntity<EmprestimoModel> CreateAsync(EmprestimoModel model) {
-        var bruteLivro = livroRepository.findById(model.getId());
+        var bruteLivro = livroRepository.findById(model.getLivro().getId());
         if (bruteLivro.isEmpty()) throw new RuntimeException("Nenhum livro encontrado");
 
         var livro = bruteLivro.get();
         if (!livro.getDisponivel()) throw new RuntimeException("O livro não está disponível");
 
         var emprestimos = emprestimoRepository.findByUsuarioIgnoreCase(model.getUsuario());
-        if (emprestimos.size() > 3) throw new RuntimeException("O usuário tem mais de 3 emprestimos");
+        if (emprestimos.size() >= 3) throw new RuntimeException("O usuário tem mais de 3 emprestimos");
 
         var emprestimo = emprestimoRepository.save(model);
+
+        livro.setDisponivel(false);
+        livroRepository.save(livro);
+
         return ResponseEntity.status(201).body(emprestimo);
     }
 }
