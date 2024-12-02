@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EmprestimoService {
     @Autowired
@@ -14,6 +16,10 @@ public class EmprestimoService {
 
     @Autowired
     private ILivroRepository livroRepository;
+
+    public List<EmprestimoModel> GetAsync(String nome) {
+        return emprestimoRepository.findByUsuarioIgnoreCase(nome);
+    }
 
     public ResponseEntity<EmprestimoModel> CreateAsync(EmprestimoModel model) {
         var bruteLivro = livroRepository.findById(model.getLivro().getId());
